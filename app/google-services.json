@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "54357158416",
+    "project_id": "jetareader-f508d",
+    "storage_bucket": "jetareader-f508d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54357158416:android:8869ded1840ef9dc6ef895",
+        "android_client_info": {
+          "package_name": "com.example.jetareader"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDoVLsr6CawJrPyFSBhkVmBQ_wwFmIm4k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
