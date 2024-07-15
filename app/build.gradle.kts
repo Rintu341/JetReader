@@ -69,5 +69,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation(platform(libs.firebase.bom))
+    // For example, add the dependencies for Firebase Authentication and Cloud Firestore
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
 }
