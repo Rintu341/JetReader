@@ -79,4 +79,14 @@ dependencies {
     //dagger and hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+
+//    val lifecycle_version = "2.8.3"
+    // Coroutine Lifecycle Scope
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime)
+
+    //Coroutines
+//    implementation(libs.kotlin.coroutines.core)
+//    implementation(libs.kotlinx.coroutines.andr oid)
+//    implementation(libs.kotlinx.coroutines.play.services)
 }
