@@ -89,4 +89,8 @@ dependencies {
 //    implementation(libs.kotlin.coroutines.core)
 //    implementation(libs.kotlinx.coroutines.android.v152)
 //    implementation(libs.kotlinx.coroutines.play.services)
+
+    //Coil
+    implementation(libs.coil)
+
 }
