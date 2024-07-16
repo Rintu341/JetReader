@@ -87,6 +87,6 @@ dependencies {
 
     //Coroutines
 //    implementation(libs.kotlin.coroutines.core)
-//    implementation(libs.kotlinx.coroutines.andr oid)
+//    implementation(libs.kotlinx.coroutines.android.v152)
 //    implementation(libs.kotlinx.coroutines.play.services)
 }
