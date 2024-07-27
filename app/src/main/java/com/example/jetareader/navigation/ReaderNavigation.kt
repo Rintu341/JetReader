@@ -19,7 +19,7 @@ fun ReaderNavigation() {
             ReaderHomeScreen(navController)
         }
         composable(route = ReaderAppScreen.LoginScreen.name) {
-            ReaderLoginScreen()
+            ReaderLoginScreen(navController)
         }
         composable(route = ReaderAppScreen.CreateAccountScreen.name) {
 //            CreateAccountScreen()

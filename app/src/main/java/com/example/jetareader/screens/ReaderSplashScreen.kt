@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.jetareader.navigation.ReaderAppScreen
 import kotlinx.coroutines.delay
 
 @Preview(
@@ -49,12 +50,14 @@ fun ReaderSplashScreen(navController: NavController = rememberNavController()) {
                         .getInterpolation(it)
                 }))
         delay(2000L)
+        navController.navigate(ReaderAppScreen.LoginScreen.name)
     }
     Surface(
         modifier = Modifier
+            .padding(15.dp)
             .size(330.dp)
             .scale(scale = scale.value),
-        color = Color.Transparent,
+        color = Color.White,
         shape = CircleShape,
         shadowElevation = 10.dp,
         border = BorderStroke(width = 2.dp, color = Color.Yellow)

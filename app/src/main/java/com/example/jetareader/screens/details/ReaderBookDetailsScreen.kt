@@ -2,9 +2,10 @@ package com.example.jetareader.screens.details
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 
 
 @Composable
-fun BookDetailsScreen(modifier: Modifier = Modifier) {
+fun BookDetailsScreen(navController: NavController) {
 
 }
