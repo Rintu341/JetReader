@@ -22,11 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.jetareader.R
 import com.example.jetareader.navigation.ReaderAppScreen
 import kotlinx.coroutines.delay
 
@@ -54,7 +56,6 @@ fun ReaderSplashScreen(navController: NavController = rememberNavController()) {
     }
     Surface(
         modifier = Modifier
-            .padding(15.dp)
             .size(330.dp)
             .scale(scale = scale.value),
         color = Color.White,
@@ -69,7 +70,8 @@ fun ReaderSplashScreen(navController: NavController = rememberNavController()) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("Reader", style = MaterialTheme.typography.displayLarge,
+            Text(
+                stringResource(id = R.string.Reader), style = MaterialTheme.typography.displayLarge,
                 color = Color.Cyan.copy(alpha = 0.5f))
             Spacer(modifier = Modifier.height(15.dp))
             Text(text = "\"Read. Change. Yourself\"", style = MaterialTheme.typography.titleMedium,
