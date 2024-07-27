@@ -1,9 +1,9 @@
 package com.example.jetareader.screens.home
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun ReaderHomeScreen(navController: NavHostController) {
     
 }
