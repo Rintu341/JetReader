@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                             Log.d("FB","onCreate: $it")
                         }
                     Greeting(
-                        name = "Android",
+                        name = "Sujan",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
