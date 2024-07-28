@@ -1,6 +1,5 @@
 package com.example.jetareader.screens.login
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,23 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,23 +28,21 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.jetareader.R
 import com.example.jetareader.components.EmailInput
 import com.example.jetareader.components.PasswordInput
+import com.example.jetareader.components.SubmitButton
 import com.example.jetareader.navigation.ReaderAppScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import java.io.Reader
 
 @Composable
-fun ReaderLoginScreen(navController: NavController) {
+fun ReaderLoginScreen(navController: NavController,
+                      viewModel: LoginViewModel = viewModel()) {
     val showLoginForm = rememberSaveable {
         mutableStateOf(true)
     }
@@ -72,8 +59,11 @@ fun ReaderLoginScreen(navController: NavController) {
                 stringResource(id = R.string.Reader), style = MaterialTheme.typography.displayLarge,
                 color = Color.Cyan.copy(alpha = 0.5f)
             )
-            if (showLoginForm.value) UserForm(loading = false, isCreateAccount = false) { email, pwd ->
+            if (showLoginForm.value) UserForm(loading = false, isCreateAccount = false) { email, password ->
                 navController.navigate(ReaderAppScreen.ReaderHomeScreen.name) // TODO Login user
+                viewModel.signInWithEmailAndPassword(email, password){
+                    navController.navigate(ReaderAppScreen.ReaderHomeScreen.name)
+                }
             }
             else{
                 UserForm(loading = false, isCreateAccount = true){ email, pwd -> //TODO Create FB Account
@@ -91,9 +81,11 @@ fun ReaderLoginScreen(navController: NavController) {
             val text = if(showLoginForm.value) "Sign Up" else "Log in"
             Text(text = "New User?")
             Text(text,
-                modifier = Modifier.clickable {
-                    showLoginForm.value = !showLoginForm.value
-                }.padding(start = 5.dp),
+                modifier = Modifier
+                    .clickable {
+                        showLoginForm.value = !showLoginForm.value
+                    }
+                    .padding(start = 5.dp),
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 color = Color.Cyan)
 
@@ -169,23 +161,7 @@ fun UserForm(
     }
 }
 
-@Composable
-fun SubmitButton(
-    textId: String,
-    loading: Boolean,
-    validInputs: Boolean,
-    onClick:() -> Unit = {}
-) {
-    Button(onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(3.dp),
-        enabled = !loading && validInputs,
-        shape = CircleShape) {
-        if(loading) CircularProgressIndicator(modifier = Modifier.size(25.dp))
-        else Text(text = textId, modifier = Modifier.padding(5.dp))
-    }
-}
+
 
 /*
        TextField(
