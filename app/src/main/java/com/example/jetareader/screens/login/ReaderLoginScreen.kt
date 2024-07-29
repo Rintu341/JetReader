@@ -60,9 +60,14 @@ fun ReaderLoginScreen(navController: NavController,
                 color = Color.Cyan.copy(alpha = 0.5f)
             )
             if (showLoginForm.value) UserForm(loading = false, isCreateAccount = false) { email, password ->
-                navController.navigate(ReaderAppScreen.ReaderHomeScreen.name) // TODO Login user
-                viewModel.signInWithEmailAndPassword(email, password){
-                    navController.navigate(ReaderAppScreen.ReaderHomeScreen.name)
+                try {
+                    navController.navigate(ReaderAppScreen.ReaderHomeScreen.name) // TODO Login user
+                    viewModel.signInWithEmailAndPassword(email, password) {
+                        navController.navigate(ReaderAppScreen.ReaderHomeScreen.name)
+                    }
+                }catch (ex:Exception)
+                {
+
                 }
             }
             else{
@@ -129,17 +134,23 @@ fun UserForm(
         EmailInput(
             emailState = email,
             enabled = !loading,
+
+            // also this lines
+            /*
             onAction = KeyboardActions {
                 passwordFocusRequest.requestFocus()
             },
+             */
+
+            onAction = KeyboardActions.Default,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         )
 
         PasswordInput(
-            modifier = Modifier
-                .focusRequester(passwordFocusRequest),
+            modifier = Modifier,
+//                .focusRequester(passwordFocusRequest), // problem with this line
             passwordState = password,
             labelId = "Password",
             enabled = !loading,
