@@ -21,7 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +46,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -110,46 +113,14 @@ fun UserTopAppBar(
     )
 }
 
-//@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
-fun ContentSection(label: String = "Reading List") {
-    val books = listOf<MBook>(
-        MBook(
-            id = "1",
-            title = "Book1",
-            authors = "Author1",
-            notes = "Note1",
-            photoUrl = R.drawable.richdadpoordad
-        ),
-        MBook(
-            id = "2",
-            title = "Book1",
-            authors = "Author1",
-            notes = "Note1",
-            photoUrl = R.drawable.richdadpoordad
-        ),
-        MBook(
-            id = "3",
-            title = "Book1",
-            authors = "Author1",
-            notes = "Note1",
-            photoUrl = R.drawable.richdadpoordad
-        ),
-        MBook(
-            id = "4",
-            title = "Book1",
-            authors = "Author1",
-            notes = "Note1",
-            photoUrl = R.drawable.richdadpoordad
-        ),
-        MBook(
-            id = "5",
-            title = "Book1",
-            authors = "Author1",
-            notes = "Note1",
-            photoUrl = R.drawable.richdadpoordad
-        )
-    )
+fun ContentSection(
+    label: String = "Reading List",
+    onAllPress: () -> Unit = {},
+    books: List<MBook> = emptyList(),
+    onBookPress: (MBook) -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -174,13 +145,16 @@ fun ContentSection(label: String = "Reading List") {
                 contentDescription = "Arrow",
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.clickable {
-                    //TODO navigate to reading list
+                    //navigate to reading list
+                    onAllPress.invoke()
                 }
             )
         }
         LazyRow {
             items(books) { book ->
-                BookItem(book)
+                BookItem(book) {
+                    onBookPress.invoke(book)
+                }
                 Spacer(modifier = Modifier.width(5.dp))
             }
         }
@@ -189,11 +163,12 @@ fun ContentSection(label: String = "Reading List") {
 }
 
 @Composable
-fun BookItem(book: MBook) {
+fun BookItem(book: MBook, onPress: (MBook) -> Unit = {}) {
     Surface(
         modifier = Modifier
             .clickable {
-                //TODO show user there book details
+                //navigate to details screen for clicked book
+                onPress(book)
             }
             .padding(3.dp)
             .width(90.dp)
@@ -207,14 +182,15 @@ fun BookItem(book: MBook) {
         )
     }
 }
+
 //TODO
 @Preview(showBackground = true)
 @Composable
 fun CurrentReadingSection(
     book: MBook = MBook(
         id = "5",
-        title = "Book1",
-        authors = "Author1",
+        title = " Rich Dad Poor Dad",
+        authors = "Robert Kiyosaki and Sharon L. Lechter",
         notes = "Note1",
         photoUrl = R.drawable.richdadpoordad
     )
@@ -238,7 +214,7 @@ fun CurrentReadingSection(
             )
             {
                 Text(
-                    text = "Current Reading",
+                    text = "Currently Reading",
                     fontSize = MaterialTheme.typography.titleLarge.fontSize,
                     fontWeight = FontWeight.Bold
                 )
@@ -268,7 +244,8 @@ fun CurrentReadingSection(
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .fillMaxHeight()
-                            .fillMaxWidth(.32f)
+                            .fillMaxWidth(.32f),
+                        color = Color(0xFF7C95B6)
                     ) {
                         Image(
                             painter = painterResource(id = book.photoUrl!!),
@@ -277,20 +254,117 @@ fun CurrentReadingSection(
                             modifier = Modifier.clip(shape = RoundedCornerShape(5.dp))
                         )
                     }
-                    Column {
-                        Icon(
-                            imageVector = Icons.Outlined.Star,
-                            contentDescription = "star",
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(5.dp)
-                                .clickable {
-                                    // TODO add book to favorites
-                                }
-                        )
+                    Column(
+                        modifier = Modifier.padding(5.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            RoundedButton()
+                            Column {
+                                Icon(
+                                    imageVector = Icons.Outlined.FavoriteBorder,
+                                    contentDescription = "star",
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier
+                                        .clickable {
+                                            // TODO add book to favorites
+                                        }
+                                )
+                                Spacer(modifier = Modifier.width(5.dp))
+                                BookRating(score = 4.5)
+                            }
+                        }
+                        Column(
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            Text(
+                                text = book.title!!,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontStyle = FontStyle.Italic,
+                                style = MaterialTheme.typography.titleLarge,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                modifier = Modifier
+                                    .padding(end = 5.dp),
+                                textAlign = TextAlign.End,
+                            )
+                            Text(
+                                text = "Author: ${book.authors}",
+                                fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                                fontStyle = FontStyle.Italic,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .padding(end = 5.dp),
+                                textAlign = TextAlign.End,
+                                maxLines = 2,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            )
+                        }
                     }
                 }
             }
 
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RoundedButton(
+    label: String = "Reading",
+    radius: Int = 29,
+    onPress: () -> Unit = {}
+) {
+    Surface(
+        modifier = Modifier
+            .padding(5.dp)
+            .fillMaxWidth(.32f)
+            .fillMaxHeight(0.2f),
+        shape = RoundedCornerShape(10),
+        color = Color(0xFF48CAE4)
+    ) {
+        Column(
+            modifier = Modifier
+                .clickable {
+                    onPress.invoke()
+                },
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = label,
+                fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun BookRating(score: Double) {
+    Surface(
+        modifier = Modifier
+            .padding(top = 5.dp)
+            .height(60.dp),
+        color = Color(0xFF7C95B6)
+    ) {
+        Column(
+
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Star,
+                contentDescription = "star",
+                tint = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = score.toString(),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

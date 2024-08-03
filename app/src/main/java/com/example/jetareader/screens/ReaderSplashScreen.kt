@@ -47,18 +47,20 @@ fun ReaderSplashScreen(navController: NavController = rememberNavController()) {
         Animatable(0f)
     }
     LaunchedEffect(key1 = true) {
-        scale.animateTo(targetValue = 0.9f,
+        scale.animateTo(
+            targetValue = 0.9f,
             animationSpec = tween(durationMillis = 800,
                 easing = {
                     OvershootInterpolator(8f)
                         .getInterpolation(it)
-                }))
+                })
+        )
         delay(2000L)
         //Check if user is already logged in
         //TODO: Check if user is already logged in
-        if(FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()){
+        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
             navController.navigate(ReaderAppScreen.LoginScreen.name)  // if not log in, go to login screen
-        }else{
+        } else {
             navController.navigate(ReaderAppScreen.ReaderHomeScreen.name) // go to home screen
         }
     }
@@ -80,10 +82,13 @@ fun ReaderSplashScreen(navController: NavController = rememberNavController()) {
         ) {
             Text(
                 stringResource(id = R.string.Reader), style = MaterialTheme.typography.displayLarge,
-                color = Color.Cyan.copy(alpha = 0.5f))
+                color = Color.Cyan.copy(alpha = 0.5f)
+            )
             Spacer(modifier = Modifier.height(15.dp))
-            Text(text = "\"Read. Change. Yourself\"", style = MaterialTheme.typography.titleMedium,
-                color = Color.LightGray)
+            Text(
+                text = "\"Read. Change. Yourself\"", style = MaterialTheme.typography.titleMedium,
+                color = Color.LightGray
+            )
         }
     }
 }

@@ -20,10 +20,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.jetareader.R
 import com.example.jetareader.components.ContentSection
 import com.example.jetareader.components.CurrentReadingSection
 import com.example.jetareader.components.FabContent
 import com.example.jetareader.components.UserTopAppBar
+import com.example.jetareader.model.MBook
 import com.example.jetareader.navigation.ReaderAppScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
@@ -32,18 +34,59 @@ import com.google.firebase.ktx.Firebase
 fun ReaderHomeScreen(navController: NavHostController) {
     var showSignOutDialog by remember { mutableStateOf(false) }
     val currentUserName = FirebaseAuth.getInstance().currentUser?.email?.split('@')?.get(0)
+    //Dummy data for testing
+    val books = listOf<MBook>(
+        MBook(
+            id = "1",
+            title = "Book1",
+            authors = "Author1",
+            notes = "Note1",
+            photoUrl = R.drawable.richdadpoordad
+        ),
+        MBook(
+            id = "2",
+            title = "Book1",
+            authors = "Author1",
+            notes = "Note1",
+            photoUrl = R.drawable.richdadpoordad
+        ),
+        MBook(
+            id = "3",
+            title = "Book1",
+            authors = "Author1",
+            notes = "Note1",
+            photoUrl = R.drawable.richdadpoordad
+        ),
+        MBook(
+            id = "4",
+            title = "Book1",
+            authors = "Author1",
+            notes = "Note1",
+            photoUrl = R.drawable.richdadpoordad
+        ),
+        MBook(
+            id = "5",
+            title = "Book1",
+            authors = "Author1",
+            notes = "Note1",
+            photoUrl = R.drawable.richdadpoordad
+        )
+    )
+
     Scaffold(
         topBar = {
-            UserTopAppBar(userName =  currentUserName.toString(),
-                navController = navController){
+            UserTopAppBar(
+                userName = currentUserName.toString(),
+                navController = navController
+            ) {
                 //TODO user log out
                 showSignOutDialog = true
             }
         },
         floatingActionButton = {
-                FabContent(){
-                    //TODO Add books
-                }
+            FabContent() {
+                //TODO Add books
+            }
         }
     ) { paddingValues ->
         Surface(
@@ -51,11 +94,15 @@ fun ReaderHomeScreen(navController: NavHostController) {
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-                Column {
-                    CurrentReadingSection()
-                    Spacer(modifier = Modifier.height(10.dp))
-                    ContentSection("Reading List")
+            Column {
+                CurrentReadingSection()
+                Spacer(modifier = Modifier.height(10.dp))
+                ContentSection("Reading List", books = books, onAllPress = {
+                    //TODO navigate to reading list
+                }) {
+                    // TODO navigate to specific or clicked book details
                 }
+            }
         }
     }
 
