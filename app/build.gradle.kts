@@ -79,18 +79,38 @@ dependencies {
     //dagger and hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
-
+    kapt (libs.androidx.hilt.compiler)
+    //viewModel
+    implementation (libs.androidx.core.ktx)
+    implementation (libs.androidx.lifecycle.viewmodel.ktx.v284)
+    implementation (libs.androidx.lifecycle.runtime.ktx.v284)
+    implementation (libs.androidx.fragment.ktx)
+    implementation (libs.androidx.lifecycle.extensions)
 //    val lifecycle_version = "2.8.3"
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     // Coroutine Lifecycle Scope
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v281)
 
     //Coroutines
 //    implementation(libs.kotlin.coroutines.core)
 //    implementation(libs.kotlinx.coroutines.android.v152)
 //    implementation(libs.kotlinx.coroutines.play.services)
 
+    implementation (libs.androidx.fragment.ktx)
+    implementation (libs.androidx.activity.ktx)
+
+
     //Coil
     implementation(libs.coil)
+
+    //Retrofit
+    implementation (libs.retrofit)
+    // OkHttp
+    implementation(libs.okhttp)
+    // JSON Converter
+    implementation (libs.converter.gson)
+    implementation(libs.converter.scalars)
 
 }

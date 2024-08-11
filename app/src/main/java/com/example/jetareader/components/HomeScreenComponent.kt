@@ -1,5 +1,6 @@
 package com.example.jetareader.components
 
+import android.icu.text.CaseMap.Title
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Star
@@ -44,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -52,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import com.example.jetareader.R
 import com.example.jetareader.model.MBook
 import com.example.jetareader.navigation.ReaderAppScreen
@@ -60,57 +64,73 @@ import com.example.jetareader.navigation.ReaderAppScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserTopAppBar(
-    userName: String = "Sujan",
+    title: String = "Sujan",
     showProfile: Boolean = true,
+    icon: ImageVector = Icons.Default.ArrowBack,
     navController: NavController,
+    omBackArrowPressed: () -> Unit = {},
     onSignOutClick: () -> Unit = {}
 ) {
     var showSignOutDialog by remember { mutableStateOf(false) }
     var showSignOutMessage by remember { mutableStateOf(false) }
-    TopAppBar(
-        title = {
-            Row(
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                // User Icon
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(15))
-                        .clickable {
-                            navController.navigate(ReaderAppScreen.ReaderStatsScreen.name)
-                        }
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // User Name
-                Text(
-                    text = userName,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Sign Out Icon
-                IconButton(onClick = {
-                    onSignOutClick.invoke()
-                }) {
+    if(showProfile) {
+        TopAppBar(
+            title = {
+                Row(
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // User Icon
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                        contentDescription = "Sign Out",
-                        tint = MaterialTheme.colorScheme.onBackground
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(15))
+                            .clickable {
+                                navController.navigate(ReaderAppScreen.ReaderStatsScreen.name)
+                            }
                     )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // User Name
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    // Sign Out Icon
+                    IconButton(onClick = {
+                        onSignOutClick.invoke()
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                            contentDescription = "Sign Out",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
-            }
-        },
-        actions = {},
-        colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.onPrimary)
-    )
+            },
+            actions = {},
+            colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.onPrimary)
+        )
+    }else{
+        TopAppBar(title = { Text(text = title,
+            fontSize = MaterialTheme.typography.titleLarge.fontSize,
+            fontWeight = FontWeight.ExtraBold) },
+            navigationIcon = {
+                IconButton(onClick = {
+                    omBackArrowPressed.invoke()
+                }) {
+                    Icon(imageVector = icon,
+                        contentDescription = "navigate",)
+                }
+            })
+    }
 }
 
 @Preview(showBackground = true)
@@ -195,6 +215,9 @@ fun CurrentReadingSection(
         photoUrl = R.drawable.richdadpoordad
     )
 ) {
+    val sectionTag = remember {
+            mutableStateOf("Currently Reading")
+    }
     BoxWithConstraints {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
@@ -214,7 +237,7 @@ fun CurrentReadingSection(
             )
             {
                 Text(
-                    text = "Currently Reading",
+                    text = sectionTag.value,
                     fontSize = MaterialTheme.typography.titleLarge.fontSize,
                     fontWeight = FontWeight.Bold
                 )
@@ -372,10 +395,10 @@ fun BookRating(score: Double) {
 //@Preview(showBackground = true)
 @Composable
 fun FabContent(
-    onTap: (String) -> Unit = {}
+    navController: NavController
 ) {
     FloatingActionButton(
-        onClick = { onTap("") },
+        onClick = { navController.navigate(ReaderAppScreen.SearchScreen.name)},
         containerColor = Color(0xFF06497E),
         shape = RoundedCornerShape(50)
     ) {

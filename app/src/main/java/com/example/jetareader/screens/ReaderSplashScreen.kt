@@ -59,8 +59,10 @@ fun ReaderSplashScreen(navController: NavController = rememberNavController()) {
         //Check if user is already logged in
         //TODO: Check if user is already logged in
         if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+            navController.popBackStack()
             navController.navigate(ReaderAppScreen.LoginScreen.name)  // if not log in, go to login screen
         } else {
+            navController.popBackStack()
             navController.navigate(ReaderAppScreen.ReaderHomeScreen.name) // go to home screen
         }
     }

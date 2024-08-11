@@ -17,7 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.jetareader.navigation.ReaderNavigation
+import com.example.jetareader.screens.search.BookSearchViewModel
 import com.example.jetareader.ui.theme.JetAReaderTheme
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,6 +54,7 @@ fun MyApp() {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
+    val bookSearchViewModel :BookSearchViewModel = viewModel()
     JetAReaderTheme {
 
     }
