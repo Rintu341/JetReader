@@ -1,6 +1,7 @@
 package com.example.jetareader.screens.search
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -23,6 +24,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +36,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -50,11 +56,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.jetareader.R
 import com.example.jetareader.components.UserTopAppBar
+import com.example.jetareader.model.Book
+import com.example.jetareader.model.Item
 import com.example.jetareader.model.MBook
 import com.example.jetareader.model.getListOfBook
 import com.example.jetareader.navigation.ReaderAppScreen
+import kotlinx.coroutines.coroutineScope
+import okhttp3.internal.wait
+import kotlin.coroutines.coroutineContext
 
 //@Preview(showBackground = true, device = Devices.PIXEL_6_PRO)
 @Composable
@@ -82,13 +96,11 @@ fun SearchScreen(navController: NavController = NavController(LocalContext.curre
                     .padding(10.dp),
                     bookSearchViewModel = bookSearchViewModel
                 ){ books ->
-//                            bookSearchViewModel.searchBooks(books)
+                            bookSearchViewModel.searchBooks(books)
                             Log.d("Search", "SearchScreen: $books ")
                     }
                 Spacer(modifier = Modifier.height(5.dp))
-                BookListArea(
-                        getListOfBook()
-                )
+                BookListArea(bookSearchViewModel)
             }
         }
     }
@@ -96,29 +108,41 @@ fun SearchScreen(navController: NavController = NavController(LocalContext.curre
 
 @Composable
 fun BookListArea(
-    listOfBooks: List<MBook> = emptyList()
+    viewModel : BookSearchViewModel
 ) {
     val listState = rememberLazyListState()
-    LaunchedEffect(key1 = Unit) {
-        listState.animateScrollToItem(index = 0)
-    }
-        LazyColumn(
-            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-            state = listState
-        ) {
-            items(listOfBooks){
-                SearchBookUI()
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if(viewModel.isLoading)
+        {
+            Log.d("BOO", "BookListArea: loading ")
+            CircularProgressIndicator()
+        }else {
+            Log.d(TAG, "BOO: ${viewModel.list}")
+            LaunchedEffect(key1 = Unit) {
+                listState.animateScrollToItem(index = 0)
+            }
+            LazyColumn(
+                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                state = listState
+            ) {
+                items(viewModel.list)
+                { item ->
+                    SearchBookUI(item = item)
+                }
             }
         }
+    }
+
+
+
 }
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
-fun SearchBookUI(modifier: Modifier = Modifier,mbook: MBook = MBook(photoUrl = R.drawable.richdadpoordad,
-    title = "Rich Dad Poor Dad",
-    authors = "Robert Kiyosaki and Sharon L. Lechter",
-    publishedDate = "1997",
-    categories = listOf("Personal Finance", "Business")
-)) {
+ fun SearchBookUI(modifier: Modifier = Modifier, item: Item) {
+
     Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -135,22 +159,26 @@ fun SearchBookUI(modifier: Modifier = Modifier,mbook: MBook = MBook(photoUrl = R
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceBetween
         ){
-            Surface(
+            Card(
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .fillMaxWidth(0.2f)
                     .fillMaxHeight(),
-                    color = Color(0xFFBDE0FE)
+//                    colors =  CardDefaults.cardColors( Color(0xFFBDE0FE))
             ) {
-               Image(painter = painterResource(id = mbook.photoUrl!!),
+               Image(painter = rememberAsyncImagePainter(model =
+                LaunchedEffect(key1 = true) {
+                    item.volumeInfo.imageLinks.smallThumbnail
+                }),
                    contentDescription =  "image for each book",
-                   contentScale = ContentScale.Fit)
+                   contentScale = ContentScale.Crop
+               )
             }
             Column(
                 modifier = Modifier.padding(end = 10.dp),
                 horizontalAlignment = Alignment.Start
             ){
-                Text(text = mbook.title.toString(),
+                Text(text = item.volumeInfo.title,
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Black,
                     maxLines = 1,
@@ -158,7 +186,7 @@ fun SearchBookUI(modifier: Modifier = Modifier,mbook: MBook = MBook(photoUrl = R
                     fontWeight = FontWeight.ExtraBold,
                     fontStyle = FontStyle.Italic
                 )
-                Text(text = "Author: ${mbook.authors.toString()}",
+                Text(text = "Author: ${item.volumeInfo.authors}",
                     style = MaterialTheme.typography.titleSmall,
                     color = Color.Black,
                     maxLines = 1,
@@ -166,12 +194,12 @@ fun SearchBookUI(modifier: Modifier = Modifier,mbook: MBook = MBook(photoUrl = R
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic
                 )
-                Text(text = "Date: ${mbook.publishedDate.toString()}",
+                Text(text = "Date: ${item.volumeInfo.publishedDate}",
                     style = MaterialTheme.typography.titleSmall,
                     color = Color.Black,
                     maxLines = 1,
                     )
-                Text(text = "Category: [${mbook.categories?.get(0)?.toString()}]",
+                Text(text = "Category: [${item.volumeInfo.categories}]",
                     color = Color.Black,
                     style = MaterialTheme.typography.titleSmall,
                     maxLines = 1,

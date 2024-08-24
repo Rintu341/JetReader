@@ -54,8 +54,6 @@ fun MyApp() {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    val bookSearchViewModel :BookSearchViewModel = viewModel()
     JetAReaderTheme {
-
     }
 }

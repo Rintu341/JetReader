@@ -104,6 +104,7 @@ dependencies {
 
     //Coil
     implementation(libs.coil)
+    implementation (libs.coil.compose)
 
     //Retrofit
     implementation (libs.retrofit)
