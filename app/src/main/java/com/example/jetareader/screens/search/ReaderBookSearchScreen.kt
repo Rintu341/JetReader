@@ -57,8 +57,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import coil.size.Size
 import com.example.jetareader.R
 import com.example.jetareader.components.UserTopAppBar
 import com.example.jetareader.model.Book
@@ -143,6 +145,15 @@ fun BookListArea(
 @Composable
  fun SearchBookUI(modifier: Modifier = Modifier, item: Item) {
 
+
+     val imageState = rememberAsyncImagePainter(
+         model = ImageRequest.Builder(LocalContext.current)
+             .data(item.volumeInfo.imageLinks.thumbnail.replace("http://", "https://"))
+             .size(Size.ORIGINAL)
+             .build()
+     ).state
+
+
     Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -166,13 +177,21 @@ fun BookListArea(
                     .fillMaxHeight(),
 //                    colors =  CardDefaults.cardColors( Color(0xFFBDE0FE))
             ) {
-               Image(painter = rememberAsyncImagePainter(model =
-                LaunchedEffect(key1 = true) {
-                    item.volumeInfo.imageLinks.smallThumbnail
-                }),
-                   contentDescription =  "image for each book",
-                   contentScale = ContentScale.Crop
-               )
+                if (imageState is AsyncImagePainter.State.Loading){
+                    CircularProgressIndicator()
+                }
+
+                if (imageState is AsyncImagePainter.State.Error){
+                    CircularProgressIndicator()
+                }
+
+                if (imageState is AsyncImagePainter.State.Success){
+                    Image(
+                        modifier = Modifier.fillMaxSize(),
+                        painter = imageState.painter, contentDescription = null
+                    )
+                }
+
             }
             Column(
                 modifier = Modifier.padding(end = 10.dp),
