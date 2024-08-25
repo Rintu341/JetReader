@@ -114,10 +114,9 @@ dependencies {
     implementation (libs.converter.gson)
     implementation(libs.converter.scalars)
 
-//    //Glide
-    implementation (libs.compose)
-    implementation (libs.glide)
-//    implementation (libs.glide)
-//    implementation (libs.accompanist.glide)
+
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp3.okhttp)
+    implementation(libs.logging.interceptor)
 
 }

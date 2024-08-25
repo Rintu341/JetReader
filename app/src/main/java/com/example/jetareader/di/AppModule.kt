@@ -7,6 +7,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -19,6 +21,14 @@ object AppModule {
     @Provides
     fun provideBookRepository(bookApi: BookApi) = BookRepository(bookApi)
 
+    private val interceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
+    private val client: OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(interceptor)
+        .build()
+
     @Singleton
     @Provides
     fun provideBookApi():BookApi
@@ -26,6 +36,7 @@ object AppModule {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
             .create(BookApi::class.java)
     }
