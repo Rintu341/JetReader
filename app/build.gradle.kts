@@ -114,4 +114,10 @@ dependencies {
     implementation (libs.converter.gson)
     implementation(libs.converter.scalars)
 
+//    //Glide
+    implementation (libs.compose)
+    implementation (libs.glide)
+//    implementation (libs.glide)
+//    implementation (libs.accompanist.glide)
+
 }

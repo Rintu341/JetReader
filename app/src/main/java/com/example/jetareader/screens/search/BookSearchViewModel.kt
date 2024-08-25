@@ -33,7 +33,7 @@ class BookSearchViewModel @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     fun searchBooks(query: String) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             if(query.isEmpty())
                 return@launch
             try {
