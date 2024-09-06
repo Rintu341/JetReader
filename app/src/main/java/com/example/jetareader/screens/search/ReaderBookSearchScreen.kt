@@ -25,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,41 +35,28 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.example.jetareader.R
 import com.example.jetareader.components.UserTopAppBar
-import com.example.jetareader.model.Book
 import com.example.jetareader.model.Item
-import com.example.jetareader.model.MBook
-import com.example.jetareader.model.getListOfBook
 import com.example.jetareader.navigation.ReaderAppScreen
-import kotlinx.coroutines.coroutineScope
-import okhttp3.internal.wait
-import kotlin.coroutines.coroutineContext
 
 //@Preview(showBackground = true, device = Devices.PIXEL_6_PRO)
 @Composable
@@ -194,7 +180,7 @@ fun BookListArea(
 
             }
             Column(
-                modifier = Modifier.padding(end = 10.dp),
+                modifier = Modifier.padding(start = 10.dp,end = 10.dp).fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ){
                 Text(text = item.volumeInfo.title,
