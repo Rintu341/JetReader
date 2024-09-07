@@ -49,6 +49,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
@@ -61,7 +62,7 @@ import com.example.jetareader.navigation.ReaderAppScreen
 //@Preview(showBackground = true, device = Devices.PIXEL_6_PRO)
 @Composable
 fun SearchScreen(navController: NavController = NavController(LocalContext.current),
-    bookSearchViewModel: BookSearchViewModel ) {
+    bookSearchViewModel: BookSearchViewModel = viewModel() ) {
     Scaffold(
         topBar = {
                 UserTopAppBar(navController = navController,
@@ -72,7 +73,8 @@ fun SearchScreen(navController: NavController = NavController(LocalContext.curre
                         navController.navigate(ReaderAppScreen.ReaderHomeScreen.name)
                     }
                 )
-        }
+        },
+
     ) { innerPadding ->
         Surface(
             modifier = Modifier
@@ -88,7 +90,9 @@ fun SearchScreen(navController: NavController = NavController(LocalContext.curre
                             Log.d("Search", "SearchScreen: $books ")
                     }
                 Spacer(modifier = Modifier.height(5.dp))
-                BookListArea(bookSearchViewModel)
+                BookListArea(bookSearchViewModel){ bookId ->
+                    navController.navigate(ReaderAppScreen.DetailScreen.name + "/${bookId}")
+                }
             }
         }
     }
@@ -96,7 +100,8 @@ fun SearchScreen(navController: NavController = NavController(LocalContext.curre
 
 @Composable
 fun BookListArea(
-    viewModel : BookSearchViewModel
+    viewModel : BookSearchViewModel,
+    onDetailsClick: (String) -> Unit ={}
 ) {
     val listState = rememberLazyListState()
 
@@ -119,6 +124,9 @@ fun BookListArea(
                 items(viewModel.list)
                 { item ->
                     SearchBookUI(item = item)
+                    {
+                        onDetailsClick.invoke(it)
+                    }
                 }
             }
         }
@@ -129,7 +137,7 @@ fun BookListArea(
 }
 //@Preview(showBackground = true)
 @Composable
- fun SearchBookUI(modifier: Modifier = Modifier, item: Item) {
+ fun SearchBookUI(modifier: Modifier = Modifier, item: Item, onDetailsClick: (String) -> Unit = {}) {
 
 
      val imageState = rememberAsyncImagePainter(
@@ -153,7 +161,11 @@ fun BookListArea(
             color = Color(0xFFBDE0FE)
     ) {
         Row (
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    onDetailsClick.invoke(item.id)
+                },
             horizontalArrangement = Arrangement.SpaceBetween
         ){
             Card(
@@ -180,7 +192,9 @@ fun BookListArea(
 
             }
             Column(
-                modifier = Modifier.padding(start = 10.dp,end = 10.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp)
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ){
                 Text(text = item.volumeInfo.title,
