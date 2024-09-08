@@ -197,7 +197,7 @@ fun BookItem(book: MBook, onPress: (MBook) -> Unit = {}) {
             .height(150.dp),
     ) {
         Image(
-            painter = painterResource(id = book.photoUrl!!),
+            painter = painterResource(id = R.drawable.richdadpoordad),
             contentDescription = "book image",
             contentScale = ContentScale.Crop,
             modifier = Modifier.clip(shape = RoundedCornerShape(5.dp))
@@ -214,7 +214,7 @@ fun CurrentReadingSection(
         title = " Rich Dad Poor Dad",
         authors = "Robert Kiyosaki and Sharon L. Lechter",
         notes = "Note1",
-        photoUrl = R.drawable.richdadpoordad
+        photoUrl = ""
     )
 ) {
     val sectionTag = remember {
@@ -273,7 +273,7 @@ fun CurrentReadingSection(
                         color = Color(0xFF7C95B6)
                     ) {
                         Image(
-                            painter = painterResource(id = book.photoUrl!!),
+                            painter = painterResource(id = R.drawable.richdadpoordad),
                             contentDescription = "book image",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.clip(shape = RoundedCornerShape(5.dp))
@@ -339,7 +339,7 @@ fun CurrentReadingSection(
 
 @Preview(showBackground = true)
 @Composable
-private fun RoundedButton(
+fun RoundedButton(
     label: String = "Reading",
     radius: Int = 29,
     onPress: () -> Unit = {}
@@ -350,7 +350,7 @@ private fun RoundedButton(
             .fillMaxWidth(.32f)
             .fillMaxHeight(0.2f),
         shape = RoundedCornerShape(10),
-        color = Color(0xFF48CAE4)
+        color = Color(0xFF7C95B6)
     ) {
         Column(
             modifier = Modifier

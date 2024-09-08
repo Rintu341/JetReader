@@ -1,14 +1,14 @@
 package com.example.jetareader.screens.details
 
 import android.util.Log
-import android.widget.Space
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,7 +38,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -53,7 +54,9 @@ import com.example.jetareader.R
 import com.example.jetareader.components.UserTopAppBar
 import com.example.jetareader.data.Resource
 import com.example.jetareader.model.Item
-import com.example.jetareader.navigation.ReaderAppScreen
+import com.example.jetareader.model.MBook
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 @Composable
@@ -63,6 +66,7 @@ fun BookDetailsScreen(navController: NavController, detailsViewModel: DetailsVie
     val bookInfo = produceState<Resource<Item>>(initialValue = Resource.Loading<Item>()) {
         value = detailsViewModel.getBookInfo(bookID)
     }
+    val googleBookId = bookInfo.value.data?.id
     val imageState = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
             .data(bookInfo.value.data?.volumeInfo?.imageLinks?.thumbnail?.replace("http://", "https://"))
@@ -78,6 +82,7 @@ fun BookDetailsScreen(navController: NavController, detailsViewModel: DetailsVie
         }
     }
     val localDams = LocalContext.current.resources.displayMetrics
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             UserTopAppBar(navController = navController,
@@ -87,9 +92,7 @@ fun BookDetailsScreen(navController: NavController, detailsViewModel: DetailsVie
                     navController.popBackStack()
                 }
             ) { }
-        },
-//        contentColor  = colorResource(id = R.color.topBar)
-        )
+        })
     {
         Surface(
             modifier = Modifier
@@ -146,7 +149,6 @@ fun BookDetailsScreen(navController: NavController, detailsViewModel: DetailsVie
                             )
                         }
                     }
-//                    Text(text ="Title : ${bookInfo.value.data!!.volumeInfo.title}")
                     Text("${titleAnnotated} : ${bookInfo.value.data!!.volumeInfo.title}")
                     Text(text ="Page count : ${bookInfo.value.data!!.volumeInfo.pageCount}")
                     Text(text ="Published Date : ${bookInfo.value.data!!.volumeInfo.publishedDate}")
@@ -164,12 +166,77 @@ fun BookDetailsScreen(navController: NavController, detailsViewModel: DetailsVie
                             ).toString()
                         )
                     }
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom
+                    )
+                    {
+                        Button(onClick = {
+                            // save user on firebase
+                            val book = MBook(
+                                title = bookInfo.value.data!!.volumeInfo.title,
+                                authors = bookInfo.value.data!!.volumeInfo.authors.toString(),
+                                description = bookInfo.value.data!!.volumeInfo.description,
+                                categories = bookInfo.value.data!!.volumeInfo.categories.toString(),
+                                notes = "",
+                                photoUrl = bookInfo.value.data!!.volumeInfo.imageLinks.thumbnail,
+                                publishedDate = bookInfo.value.data!!.volumeInfo.publishedDate,
+                                pageCount = bookInfo.value.data!!.volumeInfo.pageCount,
+                                rating = 0.0,
+                                googleBookId = googleBookId,
+                                userId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+                            )
+                            saveToFirebase(book)
+                            {
+                                Toast.makeText(context, "book store on fire store", Toast.LENGTH_SHORT).show()
+                                navController.popBackStack()
+                            }
+                        },
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(Color.Green)) {
+                            Text(text = "Save")
+                        }
+                            Button(onClick = {
+                                navController.popBackStack()
+                            },
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(Color.Blue)) {
+                            Text(text = "Cancel", color = Color.White)
+                        }
+                    }
 
                 }
             }
             }
         }
     }
+
+fun saveToFirebase(book: MBook = MBook(), onSuccess:() -> Unit = {}) {
+    val db = FirebaseFirestore.getInstance()
+    val dbCollection = db.collection("books")
+    if (book.toString().isNotEmpty()) {
+        dbCollection.add(book)
+            .addOnSuccessListener { documentRef -> // if book store on firebase successfully then it generate an document reference
+                val docId = documentRef.id
+                dbCollection.document(docId)
+                    .update(hashMapOf("id" to docId) as Map<String, Any>) // update id by new document id of book
+                    .addOnCompleteListener { task ->
+                        if(task.isSuccessful)
+                        {
+                            onSuccess.invoke()
+                        }
+                    }
+            }.addOnFailureListener {
+                Log.w("Save", "saveToFirebase:  Error updating doc", it)
+            }
+    }
+}
+
 @Composable
 fun ExpandableCard(title: String) {
 
