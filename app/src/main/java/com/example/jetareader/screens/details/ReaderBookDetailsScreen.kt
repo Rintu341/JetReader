@@ -217,6 +217,7 @@ fun BookDetailsScreen(navController: NavController, detailsViewModel: DetailsVie
     }
 
 fun saveToFirebase(book: MBook = MBook(), onSuccess:() -> Unit = {}) {
+
     val db = FirebaseFirestore.getInstance()
     val dbCollection = db.collection("books")
     if (book.toString().isNotEmpty()) {
@@ -226,8 +227,7 @@ fun saveToFirebase(book: MBook = MBook(), onSuccess:() -> Unit = {}) {
                 dbCollection.document(docId)
                     .update(hashMapOf("id" to docId) as Map<String, Any>) // update id by new document id of book
                     .addOnCompleteListener { task ->
-                        if(task.isSuccessful)
-                        {
+                        if (task.isSuccessful) {
                             onSuccess.invoke()
                         }
                     }
@@ -235,7 +235,8 @@ fun saveToFirebase(book: MBook = MBook(), onSuccess:() -> Unit = {}) {
                 Log.w("Save", "saveToFirebase:  Error updating doc", it)
             }
     }
-}
+
+}// end
 
 @Composable
 fun ExpandableCard(title: String) {

@@ -1,6 +1,7 @@
 package com.example.jetareader.components
 
 import android.icu.text.CaseMap.Title
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -48,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -57,6 +61,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
 import com.example.jetareader.R
 import com.example.jetareader.model.MBook
 import com.example.jetareader.navigation.ReaderAppScreen
@@ -131,7 +139,9 @@ fun UserTopAppBar(
                     Icon(imageVector = icon,
                         contentDescription = "navigate",)
                 }
-            })
+            },
+            colors = TopAppBarDefaults.topAppBarColors(colorResource(id = R.color.topBar))
+            )
     }
 }
 
@@ -186,40 +196,62 @@ fun ContentSection(
 
 @Composable
 fun BookItem(book: MBook, onPress: (MBook) -> Unit = {}) {
+    val imageState = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(book.photoUrl!!.replace("http://", "https://"))
+            .size(Size.ORIGINAL)
+            .build()
+    ).state
     Surface(
         modifier = Modifier
             .clickable {
                 //navigate to details screen for clicked book
                 onPress(book)
+//                Log.d("Click Book", "BookItem: ${book.title} ")
             }
             .padding(3.dp)
             .width(90.dp)
             .height(150.dp),
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.richdadpoordad),
-            contentDescription = "book image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.clip(shape = RoundedCornerShape(5.dp))
-        )
+//        Image(
+//            painter = painterResource(id = R.drawable.richdadpoordad),
+//            contentDescription = "book image",
+//            contentScale = ContentScale.Crop,
+//            modifier = Modifier.clip(shape = RoundedCornerShape(5.dp))
+//        )
+
+        if (imageState is AsyncImagePainter.State.Loading){
+            CircularProgressIndicator()
+        }
+
+        if (imageState is AsyncImagePainter.State.Error){
+            CircularProgressIndicator()
+        }
+
+        if (imageState is AsyncImagePainter.State.Success){
+            Image(
+                modifier = Modifier.fillMaxSize(),
+                painter = imageState.painter, contentDescription = null
+            )
+        }
+
     }
 }
 
 //TODO
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun CurrentReadingSection(
-    book: MBook = MBook(
-        id = "5",
-        title = " Rich Dad Poor Dad",
-        authors = "Robert Kiyosaki and Sharon L. Lechter",
-        notes = "Note1",
-        photoUrl = ""
-    )
+    book: MBook? = null,
+    sectionName:String = "Currently Reading",
+    onClick: (MBook) -> Unit ={}
 ) {
-    val sectionTag = remember {
-            mutableStateOf("Currently Reading")
-    }
+    val imageState = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(book?.photoUrl?.replace("http://", "https://"))
+            .size(Size.ORIGINAL)
+            .build()
+    ).state
     BoxWithConstraints {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
@@ -228,6 +260,11 @@ fun CurrentReadingSection(
                 .fillMaxWidth()
                 .height(250.dp)
                 .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
+                .clickable {
+                    if (book != null) {
+                        onClick.invoke(book)
+                    }
+                }
         ) {
             Row(
                 modifier = Modifier
@@ -239,18 +276,18 @@ fun CurrentReadingSection(
             )
             {
                 Text(
-                    text = sectionTag.value,
+                    text = sectionName,
                     fontSize = MaterialTheme.typography.titleLarge.fontSize,
                     fontWeight = FontWeight.Bold
                 )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "Arrow",
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.clickable {
-                        //TODO navigate to reading list
-                    }
-                )
+//                Icon(
+//                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+//                    contentDescription = "Arrow",
+//                    tint = MaterialTheme.colorScheme.onBackground,
+//                    modifier = Modifier.clickable {
+//                        //TODO navigate to reading list
+//                    }
+//                )
             }
 
             Card(
@@ -272,12 +309,20 @@ fun CurrentReadingSection(
                             .fillMaxWidth(.32f),
                         color = Color(0xFF7C95B6)
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.richdadpoordad),
-                            contentDescription = "book image",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.clip(shape = RoundedCornerShape(5.dp))
-                        )
+                        if (imageState is AsyncImagePainter.State.Loading){
+                            CircularProgressIndicator()
+                        }
+
+                        if (imageState is AsyncImagePainter.State.Error){
+                            CircularProgressIndicator()
+                        }
+
+                        if (imageState is AsyncImagePainter.State.Success){
+                            Image(
+                                modifier = Modifier.fillMaxSize(),
+                                painter = imageState.painter, contentDescription = null
+                            )
+                        }
                     }
                     Column(
                         modifier = Modifier.padding(5.dp),
@@ -306,28 +351,34 @@ fun CurrentReadingSection(
                         Column(
                             horizontalAlignment = Alignment.End
                         ) {
-                            Text(
-                                text = book.title!!,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontStyle = FontStyle.Italic,
-                                style = MaterialTheme.typography.titleLarge,
-                                maxLines = 1,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .padding(end = 5.dp),
-                                textAlign = TextAlign.End,
-                            )
-                            Text(
-                                text = "Author: ${book.authors}",
-                                fontSize = MaterialTheme.typography.titleSmall.fontSize,
-                                fontStyle = FontStyle.Italic,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier
-                                    .padding(end = 5.dp),
-                                textAlign = TextAlign.End,
-                                maxLines = 2,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                            )
+                            if (book != null) {
+                                book.title?.let {
+                                    Text(
+                                        text = it,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontStyle = FontStyle.Italic,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                        modifier = Modifier
+                                            .padding(end = 5.dp),
+                                        textAlign = TextAlign.End,
+                                    )
+                                }
+                            }
+                            if (book != null) {
+                                Text(
+                                    text = "Author: ${book.authors}",
+                                    fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                                    fontStyle = FontStyle.Italic,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .padding(end = 5.dp),
+                                    textAlign = TextAlign.End,
+                                    maxLines = 2,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                )
+                            }
                         }
                     }
                 }

@@ -30,10 +30,12 @@ lifecycleRuntimeKtxVersion = "2.8.5"
 lifecycleViewmodelCompose = "2.8.5"
 lifecycleViewmodelKtx = "2.8.5"
 lifecycleViewmodelKtxVersion = "2.8.5"
+materialIconsExtended = "1.7.1"
 navigationCompose = "2.8.0"
 okhttp = "5.0.0-alpha.14"
 okhttpBom = "4.12.0"
 retrofit = "2.11.0"
+firebaseDatabaseKtx = "21.0.0"
 
 [libraries]
 accompanist-glide = { module = "com.google.accompanist:accompanist-glide", version.ref = "accompanistGlide" }
@@ -48,6 +50,7 @@ androidx-lifecycle-runtime-ktx-v284 = { module = "androidx.lifecycle:lifecycle-r
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-lifecycle-viewmodel-ktx-v284 = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtxVersion" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 compose = { module = "com.github.bumptech.glide:compose", version.ref = "compose" }
@@ -79,6 +82,7 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttpBom" }
 okhttp3-okhttp = { module = "com.squareup.okhttp3:okhttp" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 #kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlin-coroutines-core", version.ref = "kotlinCoroutinesCore" }
 ##noinspection SimilarGradleDependency
 #kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }

@@ -238,17 +238,18 @@ fun SearchForm(
     onSearch:(String) -> Unit = {}
 )
 {
+    val searchQueryState = rememberSaveable {
+        mutableStateOf("")
+    }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val searchQueryValue = remember {
+        mutableStateOf("")
+    }
+    val valid = remember {
+        searchQueryState.value.trim().isNotEmpty()
+    }
     Column() {
-        val searchQueryState = rememberSaveable {
-            mutableStateOf("")
-        }
-        val keyboardController = LocalSoftwareKeyboardController.current
-        val searchQueryValue = remember {
-            mutableStateOf("")
-        }
-        val valid = remember {
-            searchQueryState.value.trim().isNotEmpty()
-        }
+
         /*
         InputField(modifier = modifier,
             valueState = searchQueryState,
